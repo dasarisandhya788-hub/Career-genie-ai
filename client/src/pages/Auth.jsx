@@ -1,11 +1,24 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { loginUser, registerUser } from "../firebase/authService";
 
-export default function Auth() {
+export default function Auth({ defaultTab }) {
   const { refreshProfile } = useAuth();
-  const [activeTab, setActiveTab] = useState("login"); // "login" or "register"
+  const [searchParams] = useSearchParams();
+  
+  // Set initial active tab from props or URL parameter (?tab=register or ?tab=login)
+  const tabFromUrl = searchParams.get("tab");
+  const initialTab = defaultTab || (tabFromUrl === "register" ? "register" : "login");
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    if (defaultTab) {
+      setActiveTab(defaultTab);
+    } else if (tabFromUrl === "register" || tabFromUrl === "login") {
+      setActiveTab(tabFromUrl);
+    }
+  }, [defaultTab, tabFromUrl]);
 
   // Login Form States
   const [loginEmail, setLoginEmail] = useState("");
@@ -54,11 +67,16 @@ export default function Auth() {
         await refreshProfile(user.uid);
       }
 
+      // Redirect directly to Dashboard
       navigate("/dashboard");
     } catch (err) {
       console.error("Login Error:", err);
       let errorMsg = err.message || "Invalid email or password.";
-      if (err.code === "auth/invalid-credential" || err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
+      if (
+        err.code === "auth/invalid-credential" ||
+        err.code === "auth/user-not-found" ||
+        err.code === "auth/wrong-password"
+      ) {
         errorMsg = "Invalid email or password.";
       } else if (err.code === "auth/invalid-email") {
         errorMsg = "Please enter a valid email address.";
@@ -108,12 +126,17 @@ export default function Auth() {
 
     setLoading(true);
     try {
-      // 1. Create credentials and user document
-      const user = await registerUser(registerEmail.trim(), registerPassword, registerName.trim());
-      // 2. Fetch/cache user profile document from Firestore before routing
+      const user = await registerUser(
+        registerEmail.trim(),
+        registerPassword,
+        registerName.trim()
+      );
+
       if (user) {
         await refreshProfile(user.uid);
       }
+
+      // Redirect directly to Dashboard
       navigate("/dashboard");
     } catch (err) {
       console.error("Registration Error:", err);
@@ -134,20 +157,28 @@ export default function Auth() {
   };
 
   return (
-    <div className="auth-container bg-light">
-      <div className="auth-card">
+    <div className="auth-container bg-light py-5 min-vh-100 d-flex align-items-center justify-content-center">
+      <div className="auth-card shadow-lg bg-white rounded-4 p-4" style={{ width: "100%", maxWidth: "480px" }}>
         {/* Tab Headers */}
-        <div className="auth-tabs-header">
+        <div className="auth-tabs-header d-flex border-bottom mb-4">
           <button
             onClick={() => handleTabChange("login")}
-            className={`auth-tab-btn ${activeTab === "login" ? "active" : ""}`}
+            className={`btn flex-fill py-3 fw-bold rounded-0 border-0 border-bottom border-3 ${
+              activeTab === "login"
+                ? "btn-light text-primary border-primary"
+                : "btn-white text-muted border-transparent"
+            }`}
             type="button"
           >
             Login
           </button>
           <button
             onClick={() => handleTabChange("register")}
-            className={`auth-tab-btn ${activeTab === "register" ? "active" : ""}`}
+            className={`btn flex-fill py-3 fw-bold rounded-0 border-0 border-bottom border-3 ${
+              activeTab === "register"
+                ? "btn-light text-primary border-primary"
+                : "btn-white text-muted border-transparent"
+            }`}
             type="button"
           >
             Register
@@ -155,14 +186,14 @@ export default function Auth() {
         </div>
 
         {/* Tab Forms Body */}
-        <div className="auth-form-container">
+        <div className="auth-form-container px-2">
           <div className="text-center mb-4">
-            <span className="fs-1">🧞</span>
-            <h3 className="fw-bold text-primary mt-2">Career Genie AI</h3>
+            <span className="fs-1">🧞‍♂️</span>
+            <h3 className="fw-bold text-primary mt-2">CareerCompassAI</h3>
             <p className="text-muted small">
               {activeTab === "login"
-                ? "Sign in to access your dashboard"
-                : "Register to build your customized roadmap"}
+                ? "Sign in to access your customized dashboard"
+                : "Register to build your personalized AI career roadmap"}
             </p>
           </div>
 

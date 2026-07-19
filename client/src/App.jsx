@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import StudentDetails from "./pages/StudentDetails";
@@ -17,8 +17,6 @@ import PublicRoute from "./components/PublicRoute";
 import { isConfigMissing } from "./firebase/config";
 
 function App() {
-  // If required Firebase configuration environment variables are missing, 
-  // immediately render helpful setup instructions instead of crashing the SDK.
   if (isConfigMissing) {
     return <SetupInstructions />;
   }
@@ -28,7 +26,7 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          {/* Public default landing route (About page) */}
+          {/* Public Landing Page */}
           <Route
             path="/"
             element={
@@ -39,14 +37,10 @@ function App() {
           />
           <Route
             path="/about"
-            element={
-              <PublicRoute>
-                <Home />
-              </PublicRoute>
-            }
+            element={<Navigate to="/" replace />}
           />
 
-          {/* Authentication login/register route */}
+          {/* Authentication Routes */}
           <Route
             path="/auth"
             element={
@@ -59,42 +53,20 @@ function App() {
             path="/login"
             element={
               <PublicRoute>
-                <Auth />
+                <Auth defaultTab="login" />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Auth defaultTab="register" />
               </PublicRoute>
             }
           />
 
-          {/* Onboarding route */}
-          <Route
-            path="/select-career"
-            element={
-              <ProtectedRoute>
-                <SelectCareer />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Unsure Student Profile onboarding page */}
-          <Route
-            path="/student-profile"
-            element={
-              <ProtectedRoute>
-                <StudentProfile />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Career Discovery wizard page */}
-          <Route
-            path="/discover-career"
-            element={
-              <ProtectedRoute>
-                <DiscoverCareer />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Authenticated-only routes */}
+          {/* Authenticated Flow Routes */}
           <Route
             path="/dashboard"
             element={
@@ -104,10 +76,10 @@ function App() {
             }
           />
           <Route
-            path="/profile"
+            path="/select-career"
             element={
               <ProtectedRoute>
-                <Profile />
+                <SelectCareer />
               </ProtectedRoute>
             }
           />
@@ -127,6 +99,35 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Auxiliary Career Discovery pages (Preserved) */}
+          <Route
+            path="/student-profile"
+            element={
+              <ProtectedRoute>
+                <StudentProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/discover-career"
+            element={
+              <ProtectedRoute>
+                <DiscoverCareer />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Fallback route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

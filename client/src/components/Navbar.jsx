@@ -17,10 +17,10 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
       <div className="container">
-        <Link className="navbar-brand fw-bold fs-3 text-primary" to={currentUser ? "/dashboard" : "/"}>
-          Career Genie AI
+        <Link className="navbar-brand fw-bold fs-3 text-primary d-flex align-items-center gap-2" to={currentUser ? "/dashboard" : "/"}>
+          <span>🧞‍♂️</span> CareerCompassAI
         </Link>
         <button
           className="navbar-toggler"
@@ -38,23 +38,23 @@ export default function Navbar() {
             {currentUser ? (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link px-3" to="/dashboard">
+                  <Link className="nav-link px-3 fw-semibold" to="/dashboard">
                     Dashboard
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link px-3" to="/profile">
-                    Profile
+                  <Link className="nav-link px-3 fw-semibold" to="/select-career">
+                    Career
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link px-3" to="/roadmap">
+                  <Link className="nav-link px-3 fw-semibold" to="/roadmap">
                     Roadmap
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link px-3" to="/student">
-                    Update Goal
+                  <Link className="nav-link px-3 fw-semibold" to="/profile">
+                    Profile
                   </Link>
                 </li>
                 <li className="nav-item ms-2">
@@ -69,8 +69,18 @@ export default function Navbar() {
             ) : (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link px-3" to="/">
-                    About
+                  <Link className="nav-link px-3 fw-semibold" to="/">
+                    Landing Page
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link px-3 fw-semibold" to="/auth?tab=login">
+                    Login
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link px-3 fw-semibold" to="/auth?tab=register">
+                    Register
                   </Link>
                 </li>
                 <li className="nav-item ms-2">
